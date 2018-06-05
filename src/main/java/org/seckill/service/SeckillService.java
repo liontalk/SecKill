@@ -37,7 +37,7 @@ public interface SeckillService {
      * @param seckillId
      * @return
      */
-    Exposer  exportSecKillUrl(long seckillId) throws Exposer;
+    Exposer  exportSecKillUrl(long seckillId);
 
 
     /**

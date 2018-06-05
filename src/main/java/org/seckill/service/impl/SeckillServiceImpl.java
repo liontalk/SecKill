@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import javax.xml.crypto.dsig.DigestMethod;
@@ -57,6 +58,7 @@ public class SeckillServiceImpl implements SeckillService {
      */
     @Override
     public Exposer exportSecKillUrl(long seckillId) {
+        Exposer exposer = null;
         SecKill secKill = secKillDao.queryById(seckillId);
         if (secKill == null) {
             return new Exposer(false, seckillId);
@@ -71,9 +73,10 @@ public class SeckillServiceImpl implements SeckillService {
         if (startTime.getTime() > now.getTime() || endTime.getTime() < now.getTime()) {
             return new Exposer(false, seckillId, now.getTime(), startTime.getTime(), endTime.getTime());
         }
-        String md5 = "";
+        String md5 = null;
         md5 = getMd5(seckillId);
-        return new Exposer(true, md5, seckillId);
+        exposer =  new Exposer(true, md5, seckillId);
+        return exposer;
     }
 
 
@@ -85,22 +88,18 @@ public class SeckillServiceImpl implements SeckillService {
 
 
     /**
-     * 执行秒杀操作
-     *
-     * @param seckillId
-     * @param userPhone
-     * @param md5
-     * @return
-     * @throws SeckillException
-     * @throws RepeatKillException
-     * @throws SeckillCloseException
+     * 使用声明式 事务的优点：
+     * 1.开发团队达成一致规定，明确标注事务方法的编程风格
+     * 2 保证事务执行的方法尽可能的短，不要穿插其他的网络操作RPC/HTTP请求或者剥离到事务方法的外部
+     * 3 不会所有的方法都需要事务 只有一条修改操作，只读操作不需要事务控制
      */
     @Override
+    @Transactional
     public SeckillExecution executeSecKill(long seckillId, long userPhone, String md5) throws SeckillException, RepeatKillException, SeckillCloseException {
 
 
         try {
-            if (md5 == null || md5.equals(getMd5(seckillId))) {
+            if (md5 == null || !md5.equals(getMd5(seckillId))) {
                 throw new SeckillException("seckill data rewrite");
             }
             /**
