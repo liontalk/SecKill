@@ -1,6 +1,7 @@
 package org.seckill.dto;
 
 import org.seckill.entity.SuccessKill;
+import org.seckill.enums.SeckillStatusEnum;
 
 /**
  * 封装秒杀执行之后的结果
@@ -29,27 +30,23 @@ public class SeckillExecution {
     /**
      * 成功之后的返回数据
      * @param seckillId
-     * @param status
-     * @param statusInfo
      * @param successKill
      */
-    public SeckillExecution(long seckillId, int status, String statusInfo, SuccessKill successKill) {
+    public SeckillExecution(long seckillId, SeckillStatusEnum seckillStatusEnum, SuccessKill successKill) {
         this.seckillId = seckillId;
-        this.status = status;
-        this.statusInfo = statusInfo;
+        this.status = seckillStatusEnum.getStatus();
+        this.statusInfo = seckillStatusEnum.getStatusInfo();
         this.successKill = successKill;
     }
 
     /**
      * 秒杀失败之后的状态
      * @param seckillId
-     * @param status
-     * @param statusInfo
      */
-    public SeckillExecution(long seckillId, int status, String statusInfo) {
+    public SeckillExecution(long seckillId, SeckillStatusEnum seckillStatusEnum) {
         this.seckillId = seckillId;
-        this.status = status;
-        this.statusInfo = statusInfo;
+        this.status = seckillStatusEnum.getStatus();
+        this.statusInfo = seckillStatusEnum.getStatusInfo();
     }
 
     public long getSeckillId() {
