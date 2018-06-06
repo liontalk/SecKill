@@ -3,7 +3,12 @@ package org.seckill.service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seckill.dto.Exposer;
+import org.seckill.dto.SeckillExecution;
 import org.seckill.entity.SecKill;
+import org.seckill.entity.SuccessKill;
+import org.seckill.exception.RepeatKillException;
+import org.seckill.exception.SeckillCloseException;
+import org.seckill.exception.SeckillException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,26 +34,70 @@ public class SeckillServiceTest {
 
     @Test
     public void getSeckillList() throws Exception {
-        List<SecKill> list =seckillService.getSeckillList();
-        logger.info("list={}",list);
+        List<SecKill> list = seckillService.getSeckillList();
+        logger.info("list={}", list);
     }
 
     @Test
     public void getSecKillById() throws Exception {
         long id = 1000L;
         SecKill secKill = seckillService.getSecKillById(id);
-        logger.info("secKill={}",secKill);
+        logger.info("secKill={}", secKill);
     }
 
     @Test
     public void exportSecKillUrl() {
         long id = 1000L;
         Exposer exposer = seckillService.exportSecKillUrl(id);
-        logger.info("exposer={}",exposer);
+        System.out.println(exposer);
+        logger.info("exposer={}", exposer);
     }
 
     @Test
     public void executeSecKill() throws Exception {
+        long id = 1000L;
+        long userPhone = 18701797171L;
+        String md5 = "c3f0907d160304e09bbe7adac6067d37";
+
+        SeckillExecution seckillExecution = null;
+        try {
+            seckillExecution = seckillService.executeSecKill(id, userPhone, md5);
+            logger.info("seckillExecution={}", seckillExecution);
+        } catch (RepeatKillException e) {
+            logger.error(e.getMessage());
+        } catch (SeckillCloseException e) {
+            logger.error(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 
+
+    /**
+     * 代码测试完整的逻辑
+     *
+     * @throws Exception
+     */
+    @Test
+    public void seckillLogic() throws Exception {
+        long id = 1000L;
+        long userPhone = 18701797173L;
+        Exposer exposer = seckillService.exportSecKillUrl(id);
+        if (exposer.isExposed()) {
+            SeckillExecution seckillExecution = null;
+            try {
+                seckillExecution = seckillService.executeSecKill(id, userPhone, exposer.getMd5());
+                logger.info("seckillExecution={}", seckillExecution);
+            } catch (RepeatKillException e) {
+                logger.error(e.getMessage());
+            } catch (SeckillCloseException e) {
+                logger.error(e.getMessage());
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+        } else {
+            logger.warn("exposer={}", exposer);
+        }
+
+    }
 }
