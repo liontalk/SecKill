@@ -7,4 +7,24 @@
 
 
   <!--修改Servlet版本为3.1-->
+  <!--配置DispatcherServlet-->
+
+  <servlet>
+    <servlet-name>seckill-dispathcer</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <!--配置SpringMVC 需要加载的配置文件-->
+    <!--
+       spring-dao.xml,spring-service.xml,spring-web.xml
+       Myabtis  Spring  SpringMVC
+    -->
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:spring/spring-*.xml</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>seckill-dispathcer</servlet-name>
+    <!--默认匹配所有的请求-->
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
 </web-app>
