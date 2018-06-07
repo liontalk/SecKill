@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -54,7 +55,7 @@ public class SecKillController {
      * @return
      */
     @RequestMapping(value = "/{seckillId}/detail", method = RequestMethod.GET)
-    public String detail(@PathVariable("seckillId") Long seckillId, Model model) {
+    public String detail(@PathVariable("seckillId") Long seckillId, ModelMap model) {
         if (seckillId == null) {
             return "redirect:/seckill/list";
         }
@@ -62,8 +63,8 @@ public class SecKillController {
         if (secKill == null) {
             return "forward:/seckill/list";
         }
-        model.addAttribute("secKill", secKill);
-        return "dateil";
+        model.put("secKill",secKill);
+        return "seckill/detail";
     }
 
 

@@ -1,22 +1,21 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="../common/head.jsp"%>
+<%@ include file="../common/tag.jsp"%>
 <html>
 <head>
     <title>秒杀详情页</title>
-    <link href="${pageContext.request.contextPath}/static/css/bootstrap.css" rel="stylesheet">
+    <%@include file="../common/head.jsp"%>
 
 </head>
 <body>
 <div class="container">
     <div class="panel panel-default text-center">
-        <div class="panel-heading">
-            <h1>${seckill.name}</h1>
+        <div class="panel-heading text-center">
+            <h1>${secKill.name}</h1>
         </div>
         <div class="panel-body"></div>
     </div>
 </div>
 
-<script src="${pageContext.request.contextPath}/static/js/jquery.js"></script>
-<script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
+<%@ include file="../common/foot.jsp"%>
 </body>
 </html>

@@ -28,8 +28,8 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <c:forEach var="seckill" items="${list}" varStatus="status">
+            <c:forEach var="seckill" items="${list}" varStatus="status">
+                <tr>
                     <td>${status.index + 1}</td>
                     <td>${seckill.name}</td>
                     <td>${seckill.number}</td>
@@ -37,17 +37,14 @@
                     <td><fmt:formatDate value="${seckill.endTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                     <td><fmt:formatDate value="${seckill.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                     <td>
-                        <a class="btn btn-info" href="/seckill/${seckill.secKillId}/detail" target="_blank">详情</a>
+                        <a class="btn btn-info" href="${pageContext.request.contextPath}/seckill//${seckill.secKillId}/detail" target="_blank">详情</a>
                     </td>
-
-                </c:forEach>
-
-            </tr>
+                </tr>
+            </c:forEach>
             </tbody>
         </table>
     </div>
 </div>
-<script src="${pageContext.request.contextPath}/static/js/jquery.js"></script>
-<script src="${pageContext.request.contextPath}/static/js/bootstrap.min.js"></script>
+<%@ include file="../common/foot.jsp" %>
 </body>
 </html>
