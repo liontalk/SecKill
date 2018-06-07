@@ -4,8 +4,7 @@
 <html>
 <head>
     <title>秒杀列表页</title>
-    <%--<%@include file="../common/head.jsp" %>--%>
-    <link href="${pageContext.request.contextPath}/static/css/bootstrap.css" rel="stylesheet">
+    <%@include file="../common/head.jsp" %>
 </head>
 <body>
 <div class="container">
