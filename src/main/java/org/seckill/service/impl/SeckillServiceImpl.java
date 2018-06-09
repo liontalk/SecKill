@@ -2,6 +2,7 @@ package org.seckill.service.impl;
 
 import org.seckill.dao.SecKillDao;
 import org.seckill.dao.SuccessKillDao;
+import org.seckill.dao.cache.RedisDao;
 import org.seckill.dto.Exposer;
 import org.seckill.dto.SeckillExecution;
 import org.seckill.entity.SecKill;
@@ -40,6 +41,9 @@ public class SeckillServiceImpl implements SeckillService {
     @Autowired
     private SuccessKillDao successKillDao;
 
+    @Autowired
+    private RedisDao redisDao;
+
     @Override
     public List<SecKill> getSeckillList() {
         return secKillDao.queryAll(0, 4);
@@ -58,14 +62,38 @@ public class SeckillServiceImpl implements SeckillService {
      */
     @Override
     public Exposer exportSecKillUrl(long seckillId) {
-        Exposer exposer = null;
-        SecKill secKill = secKillDao.queryById(seckillId);
+        // 优化点：缓存优化，超时的基础上一致性
+        /**
+         * get from cache
+         * if null
+         *    get from db
+         *  else
+         *    put cache
+         *    logic 或return
+         */
+        // 1 访问redis
+        SecKill secKill = redisDao.getSecKill(seckillId);
+        if (secKill == null) {
+            // 2 数据库获取
+            secKill = secKillDao.queryById(seckillId);
+            if (secKill == null) {
+                return new Exposer(false, seckillId);
+            }else{
+                // 放入到redis 中
+                redisDao.putSecKill(secKill);
+            }
+        }
+
+
+
+       /*
+       未优化之前的代码
+       SecKill secKill = secKillDao.queryById(seckillId);
         if (secKill == null) {
             return new Exposer(false, seckillId);
-        }
+        }*/
         Date startTime = secKill.getStartTime();
         Date endTime = secKill.getEndTime();
-
         /**
          * 当前系统的时间
          */
@@ -75,7 +103,7 @@ public class SeckillServiceImpl implements SeckillService {
         }
         String md5 = null;
         md5 = getMd5(seckillId);
-        exposer =  new Exposer(true, md5, seckillId);
+        Exposer exposer = new Exposer(true, md5, seckillId);
         return exposer;
     }
 
@@ -96,8 +124,6 @@ public class SeckillServiceImpl implements SeckillService {
     @Override
     @Transactional
     public SeckillExecution executeSecKill(long seckillId, long userPhone, String md5) throws SeckillException, RepeatKillException, SeckillCloseException {
-
-
         try {
             if (md5 == null || !md5.equals(getMd5(seckillId))) {
                 throw new SeckillException("seckill data rewrite");
