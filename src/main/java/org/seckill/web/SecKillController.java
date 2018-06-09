@@ -100,7 +100,7 @@ public class SecKillController {
     @ResponseBody
     public SecKillResult<SeckillExecution> executeSecKill(@PathVariable("seckillId") Long seckillId,
                                                           @PathVariable("md5") String md5,
-                                                          @CookieValue(value = "userPhone", required = false) Long userPhone) {
+                                                          @CookieValue(value = "killPhone", required = false) Long userPhone) {
         if (userPhone == null) {
             return new SecKillResult<SeckillExecution>(false, "用户未注册");
         }
@@ -110,13 +110,13 @@ public class SecKillController {
             result = new SecKillResult<SeckillExecution>(true, seckillExecution);
         } catch (RepeatKillException repeat) {
             SeckillExecution seckillExecution = new SeckillExecution(seckillId, SeckillStatusEnum.REPEAT_KILL);
-            return new SecKillResult<SeckillExecution>(false, seckillExecution);
+            return new SecKillResult<SeckillExecution>(true, seckillExecution);
         } catch (SeckillCloseException close) {
             SeckillExecution seckillExecution = new SeckillExecution(seckillId, SeckillStatusEnum.END);
-            return new SecKillResult<SeckillExecution>(false, seckillExecution);
+            return new SecKillResult<SeckillExecution>(true, seckillExecution);
         } catch (Exception e) {
             SeckillExecution seckillExecution = new SeckillExecution(seckillId, SeckillStatusEnum.INNER_ERROR);
-            return new SecKillResult<SeckillExecution>(false, seckillExecution);
+            return new SecKillResult<SeckillExecution>(true, seckillExecution);
         }
         return result;
     }
