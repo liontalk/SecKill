@@ -26,4 +26,14 @@
     </select>
 
 
+    <!--使用存储过程去秒杀-->
+    <select id="executeSecKillByProcedure" parameterType="java.util.Map" statementType="CALLABLE">
+        call success_kill(
+        #{seckillId,jdbcType=BIGINT,mode=IN},
+        #{userPhone,jdbcType=BIGINT,mode=IN},
+        #{killTime,jdbcType=TIMESTAMP,mode=IN},
+        #{result,jdbcType=INTEGER,mode=OUT}
+      );
+    </select>
+
 </mapper>

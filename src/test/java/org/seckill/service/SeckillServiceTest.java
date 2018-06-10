@@ -100,4 +100,17 @@ public class SeckillServiceTest {
         }
 
     }
+
+
+    @Test
+    public void executeSecKillByProcedure() {
+        long seckillId = 1002L;
+        long phone = 18701797878L;
+        Exposer exposer = seckillService.exportSecKillUrl(seckillId);
+        if (exposer.isExposed()) {
+            String md5 = exposer.getMd5();
+            SeckillExecution seckillExecution = seckillService.executeSecKillByProcedure(seckillId, phone, md5);
+            logger.info("秒杀结果：" + seckillExecution.getStatusInfo());
+        }
+    }
 }
