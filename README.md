@@ -32,3 +32,12 @@ Java高并发秒杀
            清楚整个秒杀的流程然后进行交互设计。
            使用bootstrap,JQuery。
            学习JavaScript良好的写法。
+           
+#秒杀流程图：
+ -------
+<div align=center><img src="https://github.com/liontalk/SecKill/blob/master/src/main/webapp/static/image/jiegou.png" width="80%" height="80%" alt="项目结构图"/></div>
+
+#秒杀流程图：
+  -------
+ <div align=center><img src="https://github.com/liontalk/SecKill/blob/master/src/main/webapp/static/image/liucheng.png" width="80%" height="80%" alt="秒杀流程图"/></div>
+ 
