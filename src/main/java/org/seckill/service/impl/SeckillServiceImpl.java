@@ -1,5 +1,6 @@
 package org.seckill.service.impl;
 
+import org.apache.commons.collections.MapUtils;
 import org.seckill.dao.SecKillDao;
 import org.seckill.dao.SuccessKillDao;
 import org.seckill.dao.cache.RedisDao;
@@ -21,7 +22,9 @@ import org.springframework.util.DigestUtils;
 
 import javax.xml.crypto.dsig.DigestMethod;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -177,6 +180,43 @@ public class SeckillServiceImpl implements SeckillService {
              * 所有编译器异常，转化为运行时异常
              */
             throw new SeckillException("seckill inner error" + e.getMessage());
+        }
+    }
+
+    /**
+     * 通过存储过程去进行用户秒杀的行为
+     *
+     * @param seckillId
+     * @param userPhone
+     * @param md5
+     * @return
+     * @throws SeckillException
+     * @throws RepeatKillException
+     * @throws SeckillCloseException
+     */
+    @Override
+    public SeckillExecution executeSecKillByProcedure(long seckillId, long userPhone, String md5) {
+        if (md5 == null && !getMd5(seckillId).equals(md5)) {
+            return new SeckillExecution(seckillId, SeckillStatusEnum.DATA_REWRITE);
+        }
+        Date date = new Date();
+        Map<String, Object> map = new HashMap<>();
+        map.put("seckillId", seckillId);
+        map.put("userPhone", userPhone);
+        map.put("killTime", date);
+        map.put("result", null);
+        try {
+            secKillDao.executeSecKillByProcedure(map);
+            int result = MapUtils.getInteger(map, "result", -2);
+            if (result == 1) {
+                SuccessKill successKill = successKillDao.queryByIdWithSeckill(seckillId, userPhone);
+                return new SeckillExecution(seckillId, SeckillStatusEnum.SUCCESS, successKill);
+            } else {
+                return new SeckillExecution(seckillId, SeckillStatusEnum.statusOf(result));
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new SeckillExecution(seckillId, SeckillStatusEnum.INNER_ERROR);
         }
     }
 }
